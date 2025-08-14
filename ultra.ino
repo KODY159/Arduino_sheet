@@ -36,17 +36,3 @@ int ultra(String s) {
     return inch;
   }
 }
-
-void autoOffLcd(){
-  while (true){
-    int cm = ultra("cm");
-    int ti = timer("ss", 5);
-    if (cm <= 10 && ti == 0){
-      lcd.noBacklight();
-      break;
-    }else{
-      lcd.backlight();
-      break;
-    }
-  }
-}
