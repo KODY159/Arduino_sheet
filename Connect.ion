@@ -1,0 +1,48 @@
+#include <WiFi.h>
+
+// ตั้งค่า WiFi SSID ที่ต้องการตรวจสอบ
+const char* targetSSID = "blank";
+
+// ตั้งค่าขา LED
+const int ledPin = 2; // เปลี่ยนเป็นขาที่คุณใช้ต่อ LED
+bool ledState = false;
+unsigned long previousMillis = 0;
+const long interval = 500; // กระพริบทุก 500ms
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin, OUTPUT);
+
+  // เริ่มเชื่อมต่อ WiFi (อัตโนมัติ)
+  WiFi.begin(); // ไม่ใส่ SSID/PASS จะเชื่อมจากรายการที่เคยเชื่อมไว้
+
+  Serial.println("กำลังเชื่อมต่อ WiFi...");
+}
+
+void loop() {
+  // ตรวจสอบสถานะการเชื่อมต่อ
+  if (WiFi.status() == WL_CONNECTED) {
+    String currentSSID = WiFi.SSID();
+    
+    if (currentSSID == targetSSID) {
+      // เชื่อมต่อกับ "blank" แล้ว -> LED ติดค้าง
+      digitalWrite(ledPin, HIGH);
+    } else {
+      // เชื่อม WiFi แต่ไม่ใช่ "blank" -> LED กระพริบ
+      blinkLED();
+    }
+  } else {
+    // ยังไม่เชื่อมต่อใดๆ -> LED กระพริบ
+    blinkLED();
+  }
+}
+
+// ฟังก์ชันทำให้ LED กระพริบ
+void blinkLED() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    ledState = !ledState;
+    digitalWrite(ledPin, ledState ? HIGH : LOW);
+  }
+}
